@@ -9,10 +9,10 @@ jobs:
       - checkout
       - run:
           name: Docker Build
-          command: docker build -t lanopsdev/services-monitoring-prom-conf .
+          command: docker build -t lanopsdev/monitoring-prom-conf .
       - run:
           name: Docker Up
-          command: docker run lanopsdev/services-monitoring-prom-conf
+          command: docker run lanopsdev/monitoring-prom-conf
   build:
     machine: true
     working_directory: ~/repo
@@ -21,12 +21,12 @@ jobs:
       - run:
           name: Docker Build
           command: |
-            docker build -t lanopsdev/services-monitoring-prom-conf:$CIRCLE_TAG .
+            docker build -t lanopsdev/monitoring-prom-conf:$CIRCLE_TAG .
       - run:
           name: Upload to Docker Hub
           command: |
             docker login -u $DOCKERHUB_USERNAME  -p $DOCKERHUB_PASSWORD
-            docker push lanopsdev/services-monitoring-prom-conf:$CIRCLE_TAG
+            docker push lanopsdev/monitoring-prom-conf:$CIRCLE_TAG
 workflows:
   version: 2
   # Un-Tagged builds
