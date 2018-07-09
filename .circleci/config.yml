@@ -1,0 +1,55 @@
+# PHP CircleCI 2.0 configuration file
+
+version: 2
+jobs:
+  test:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Docker Build
+          command: docker build -t lanopsdev/services-monitoring-prom-conf .
+      - run:
+          name: Docker Up
+          command: docker run lanopsdev/services-monitoring-prom-conf
+  build:
+    machine: true
+    working_directory: ~/repo
+    steps:
+      - checkout
+      - run:
+          name: Docker Build
+          command: |
+            docker build -t lanopsdev/services-monitoring-prom-conf:$CIRCLE_TAG .
+      - run:
+          name: Upload to Docker Hub
+          command: |
+            docker login -u $DOCKERHUB_USERNAME  -p $DOCKERHUB_PASSWORD
+            docker push lanopsdev/services-monitoring-prom-conf:$CIRCLE_TAG
+workflows:
+  version: 2
+  # Un-Tagged builds
+  test:
+    jobs:
+      - test:
+          filters:
+            tags:
+              ignore: /^v.*/
+  # Tagged Builds
+  test-and-build:
+    jobs:
+      - test:
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
+      - build:
+          requires:
+            - test
+          filters:
+            branches:
+              ignore: /.*/
+            tags:
+              only: /^v.*/
